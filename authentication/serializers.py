@@ -43,12 +43,3 @@ class UserSerializer(serializers.ModelSerializer):
         profile.save()
 
         return instance
-
-    def validate_email(self, value):
-        # Hay un usuario con este email ya registrado?
-        try:
-            user = get_user_model().objects.get(email=value)
-        except get_user_model().DoesNotExist:
-            return value
-        # En cualquier otro caso la validación fallará
-        raise serializers.ValidationError("Email en uso")

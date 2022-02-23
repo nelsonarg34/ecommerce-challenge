@@ -1,5 +1,4 @@
 from django.db import models
-from django.conf import settings
 from django.db.models.signals import post_delete
 from django.dispatch.dispatcher import receiver
 from datetime import datetime
@@ -36,7 +35,6 @@ class AvailableManager(models.Manager):
 
 
 class Product(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=150, unique=True, null=False, blank=False)
     slug = models.SlugField(unique=True, null=False, blank=False)
     category = models.ManyToManyField(Category, related_name='products')
