@@ -38,6 +38,7 @@ INSTALLED_APPS = [
 
     # Django custom apps
     'authentication',
+    'product',
 ]
 
 MIDDLEWARE = [
@@ -176,6 +177,7 @@ CORS_ALLOW_HEADERS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
         'rest_framework.permissions.IsAuthenticated',
         'rest_framework.permissions.AllowAny'
     ),
