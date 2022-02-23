@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     # Django custom apps
     'authentication',
     'product',
+    'order',
 ]
 
 MIDDLEWARE = [
