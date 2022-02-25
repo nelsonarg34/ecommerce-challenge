@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('url', 'email', 'first_name', 'last_name', 'password', 'profile')
+        fields = ('email', 'first_name', 'last_name', 'password', 'profile')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -34,7 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
         instance.email = validated_data.get('email', instance.email)
         instance.save()
 
-        profile.date_of_birth = profile_data.get('dob', profile.dob)
+        profile.date_of_birth = profile_data.get('date_of_birth', profile.date_of_birth)
         profile.address = profile_data.get('address', profile.address)
         profile.country = profile_data.get('country', profile.country)
         profile.city = profile_data.get('city', profile.city)
@@ -43,3 +43,20 @@ class UserSerializer(serializers.ModelSerializer):
         profile.save()
 
         return instance
+    
+    def to_representation(self,instance):
+        return {
+            'id': instance.id,
+            'first_name': instance.first_name,
+            'last_name': instance.last_name,
+            'address': instance.profile.address,
+            'city': instance.profile.city,
+        }
+
+class UserBasicSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = get_user_model()
+        fields = '__all__'
+
+

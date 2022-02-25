@@ -1,4 +1,4 @@
-from django.conf.urls import url, include
+from django.urls import path, include
 from rest_framework import routers
 from authentication.views import UserViewSet
 
@@ -6,6 +6,6 @@ router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 
 urlpatterns = [
-    url(r'^', include(router.urls)),
-    url(r'^auth/', include('rest_auth.urls')),
+    path('', include(router.urls)),
+    path('auth/', include('rest_auth.urls')),
 ]

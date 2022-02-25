@@ -4,7 +4,6 @@ from .models import Product, Category
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    """ adding the product class to the admin site """
 
     list_display = (
         'name', "price", "stock", "is_available", 'created', "updated")
@@ -17,7 +16,6 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    """ adding category class to the admin site """
 
     list_display = ("name", "slug", "is_lux")
     list_editable = ['is_lux']

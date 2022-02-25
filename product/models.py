@@ -37,7 +37,7 @@ class AvailableManager(models.Manager):
 class Product(models.Model):
     name = models.CharField(max_length=150, unique=True, null=False, blank=False)
     slug = models.SlugField(unique=True, null=False, blank=False)
-    category = models.ManyToManyField(Category, related_name='products')
+    category = models.ForeignKey(Category, related_name="products_category", null=True, on_delete=models.CASCADE)
     price = models.PositiveIntegerField()
     is_available = models.BooleanField(default=True)
     stock = models.PositiveIntegerField()

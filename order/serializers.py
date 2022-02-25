@@ -1,24 +1,33 @@
+from importlib.metadata import requires
 from rest_framework import serializers
-from .models import Order, OrderItem
+
+from authentication.serializers import UserSerializer
+from .models import Order, OrderDetail
 from product.serializers import *
 
 
-class OrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        exclude = "modified"
-
-
-class OrderItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderItem
-        exclude = "modified"
-
-
-class OrderItemMiniSerializer(serializers.ModelSerializer):
-    order = OrderSerializer(required=False, read_only=True)
+class OrderDetailSerializer(serializers.ModelSerializer):
+    
     product = ProductSerializer(required=False, read_only=True)
 
     class Meta:
-        model = OrderItem
-        exclude = "modified"
+        model = OrderDetail
+        fields = '__all__'
+
+class OrderDetailBasicSerializer(serializers.ModelSerializer):
+    
+    product = ProductSerializer(required=False, read_only=True)
+
+    class Meta:
+        model = OrderDetail
+        exclude = ('order', )
+
+
+class OrderSerializer(serializers.ModelSerializer):
+
+    buyer = UserSerializer(required=False, read_only=True)
+    order_items = OrderDetailBasicSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Order
+        fields = ['id','order_number', 'buyer', 'order_items', 'status', 'is_paid', 'date_time']
