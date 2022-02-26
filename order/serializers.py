@@ -6,28 +6,28 @@ from .models import Order, OrderDetail
 from product.serializers import *
 
 
+class OrderDetailBasicSerializer(serializers.ModelSerializer):
+
+    product_detail = ProductSerializer(source='product', read_only=True)
+
+    class Meta:
+        model = OrderDetail
+        fields = ['product', 'product_detail', 'quantity',]
+
 class OrderDetailSerializer(serializers.ModelSerializer):
     
-    product = ProductSerializer(required=False, read_only=True)
+    product_detail = ProductSerializer(source='product', read_only=True)
 
     class Meta:
         model = OrderDetail
-        fields = '__all__'
-
-class OrderDetailBasicSerializer(serializers.ModelSerializer):
-    
-    product = ProductSerializer(required=False, read_only=True)
-
-    class Meta:
-        model = OrderDetail
-        exclude = ('order', )
+        fields = ['id','order', 'product', 'product_detail', 'quantity',]
 
 
 class OrderSerializer(serializers.ModelSerializer):
-
-    buyer = UserSerializer(required=False, read_only=True)
-    order_items = OrderDetailBasicSerializer(many=True, read_only=True)
+    
+    buyer_detail = UserSerializer(source='buyer', read_only=True)
+    order_items_detail = OrderDetailBasicSerializer(source='order_items',many=True, read_only=True)
     
     class Meta:
         model = Order
-        fields = ['id','order_number', 'buyer', 'order_items', 'status', 'is_paid', 'date_time']
+        fields = ['id','order_number', 'buyer', 'buyer_detail','order_items', 'order_items_detail','status', 'is_paid', 'date_time']
