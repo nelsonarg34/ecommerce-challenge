@@ -1,15 +1,13 @@
-from itertools import product
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404, render
-from django.utils.decorators import method_decorator
-from rest_framework.exceptions import NotFound, ParseError
+from datetime import datetime
+from datetime import timedelta
+import pytz
+
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import filters
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
-from rest_framework.views import APIView
 from rest_framework import permissions, status, exceptions
 
 from .serializers import (
@@ -27,20 +25,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         permissions.IsAdminUser, permissions.IsAuthenticatedOrReadOnly, IsAuthenticated]
     authentication_classes = [SessionAuthentication]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['order_number']
+    search_fields = ['status']
 
     def get_queryset(self):
         user = self.request.user
         return Order.objects.prefetch_related('buyer','order_items__product').filter(buyer=user)
-
-    def list(self, request):
-        order_serializer = self.get_serializer(self.get_queryset(), many=True)
-        data = {
-            "total": self.get_queryset().count(),
-            "totalNotFiltered": self.get_queryset().count(),
-            "rows": order_serializer.data
-        }
-        return Response(data, status=status.HTTP_200_OK)
 
 
 class OrderDetailViewSet(viewsets.ModelViewSet):
@@ -50,24 +39,19 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
         permissions.IsAdminUser, permissions.IsAuthenticatedOrReadOnly, IsAuthenticated]
     authentication_classes = [SessionAuthentication]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['order', 'product']
+    search_fields = ['order__status', 'product__name']
+
 
     def get_queryset(self):
         user = self.request.user
         return OrderDetail.objects.select_related('order__buyer', 'product').filter(order__buyer=user)
 
-    def list(self, request):
-        orderdetail_serializer = self.get_serializer(self.get_queryset(), many=True)
-        data = {
-            "total": self.get_queryset().count(),
-            "rows": orderdetail_serializer.data
-        }
-        return Response(data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         order_quantity = serializer.validated_data['quantity']
+        user = self.request.user
 
         product = Product.objects.filter(
             id=str(serializer.validated_data['product'])
@@ -82,22 +66,38 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
             raise exceptions.NotAcceptable("Quantity of this product is out.")
 
         try:
-            order_number = request.data.get("order_number", "")
-            quantity = request.data.get("quantity", 1)
-        except:
-            pass
+            order = Order.objects.get(buyer=user, status="p")
+            order_time = order.date_time + timedelta(minutes=60)
+            now = datetime.now()
+            now = pytz.utc.localize(now)
 
-        try:
-            order = Order.objects.get(buyer=self.request.user)
+            if order_time < now:
+                order.status="x"
+                order.save(update_fields=['status'])
+                order = Order().create_order(buyer=user, status="p")
         except ObjectDoesNotExist:
-            order = Order().create_order(self.request.user, order_number)
+            order = Order().create_order(buyer=user, status="p")
 
-        #total = quantity * product.price
-        
-        order_item = OrderDetail().create_order_item(order, product, quantity)
+        order_item = OrderDetail().create_order_item(order, product, order_quantity)
         serializer = OrderDetailBasicSerializer(order_item)
         headers = self.get_success_headers(serializer.data)
-        
+
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        product = Product.objects.filter(
+            id=str(instance.product)
+        ).order_by('created').first()
+
+        order_quantity = instance.quantity
+        product.stock += order_quantity
+        product.save()
+
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def perform_destroy(self, instance):
+        instance.delete()
