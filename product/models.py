@@ -43,10 +43,11 @@ class Product(models.Model):
     stock = models.PositiveIntegerField()
     objects = models.Manager()
     available = AvailableManager()
-    image = models.ImageField(upload_to=product_image)
+    image = models.ImageField(upload_to=product_image, null=True, blank=True)
     description = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+
     def __str__(self):
-        return self.name
+        return "{}".format(self.id)
