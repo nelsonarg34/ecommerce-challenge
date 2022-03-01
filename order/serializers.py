@@ -6,6 +6,13 @@ from .models import Order, OrderDetail
 from product.serializers import *
 
 
+class OrderDetailMinSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = OrderDetail
+        fields = ['product']
+
+
 class OrderDetailBasicSerializer(serializers.ModelSerializer):
     product_detail = ProductSerializer(source='product', read_only=True)
 
@@ -41,12 +48,12 @@ class OrderBasicSerializer(serializers.ModelSerializer):
 
 class OrderDetailSerializer(serializers.ModelSerializer):
     product_detail = ProductBasicSerializer(source='product', read_only=True)
-    order_detail = OrderBasicSerializer(source='order', read_only=True)
+    #order_detail = OrderBasicSerializer(source='order', read_only=True)
     order = OrderBasicSerializer(required=False, read_only=True)
 
     class Meta:
         model = OrderDetail
-        fields = ['id','order', 'order_detail', 'product', 'product_detail', 'quantity',]
+        fields = ['id','order', 'product', 'product_detail', 'quantity',]
 
 
 

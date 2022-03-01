@@ -1,3 +1,4 @@
+from ast import Not
 from datetime import datetime
 from datetime import timedelta
 import pytz
@@ -13,7 +14,7 @@ from rest_framework import permissions, status, exceptions
 from .serializers import (
     OrderDetailSerializer,
     OrderSerializer,
-    OrderDetailBasicSerializer
+    OrderDetailBasicSerializer,
 )
 from .models import Order, OrderDetail
 from .models import Product
@@ -30,6 +31,24 @@ class OrderViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return Order.objects.prefetch_related('buyer','order_items__product').filter(buyer=user)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        order_items = OrderDetail.objects.filter(order=instance.id).all()
+        for item in order_items:
+            product = Product.objects.filter(
+                id=str(item.product)
+            ).first()
+            order_quantity = item.quantity
+            product.stock += order_quantity
+            product.save()
+
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def perform_destroy(self, instance):
+        instance.delete()
 
 
 class OrderDetailViewSet(viewsets.ModelViewSet):
@@ -60,8 +79,7 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
         if product and product.stock >= order_quantity:
             actual_quantity = product.stock
             product.stock = actual_quantity - order_quantity
-            product.save(update_fields=['stock'])
-            serializer.save()
+            
         else:
             raise exceptions.NotAcceptable("Quantity of this product is out.")
 
@@ -78,11 +96,24 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
         except ObjectDoesNotExist:
             order = Order().create_order(buyer=user, status="p")
 
-        order_item = OrderDetail().create_order_item(order, product, order_quantity)
-        serializer = OrderDetailBasicSerializer(order_item)
-        headers = self.get_success_headers(serializer.data)
+        orderdetail_serializer = self.get_queryset().filter(order=order)
+        print(serializer.validated_data['product'])
+        print(orderdetail_serializer)
+        
+        if orderdetail_serializer:
+            for order_product in orderdetail_serializer:
+                print(order_product.product)
+                if serializer.validated_data['product'] == order_product.product:
+                    raise exceptions.NotAcceptable("The product exists in the order.")
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            product.save(update_fields=['stock'])
+            serializer.save()
+            order_item = OrderDetail().create_order_item(order, product, order_quantity)
+            serializer = OrderDetailBasicSerializer(order_item)
+            headers = self.get_success_headers(serializer.data)
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
     def destroy(self, request, *args, **kwargs):
