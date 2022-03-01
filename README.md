@@ -93,13 +93,13 @@ Editar o eliminar una categoría de producto (GET, PUT, PATCH, DELETE)
 
 <br>
 
-## Ordenes y Detalle de Orden
+## Órdenes y Detalle de Orden
 
 ### Características
 - Registrar/Editar una orden (inclusive sus detalles)
 - Eliminar una orden
 - Consultar una orden y sus detalles
-- Listar todas las ordenes
+- Listar todas las órdenes
 - Modificar una orden
 
 ###     End points
@@ -109,10 +109,14 @@ Editar o eliminar una categoría de producto (GET, PUT, PATCH, DELETE)
 Listar todos los detalles de las órdenes o crear una orden con sus detalles (GET, POST)
 Crea un ítem de producto y lo agrega a una orden activa, si no existe una orden se crea.
 Si la orden existe pero paso mas de 60 minutos desde su creación, esta última cambia su estado 
-a "Cancelado" y se genera una nueva. 
+a "Cancelado", se destruyen sus items de productos, se recupera el stock y se genera una nueva. 
 Con la creación de la orden y su ítem (OrderDetail), se actualiza el stock del producto seleccionado.
 No se pueden generar items de productos iguales, si se desea mas de un mismo producto, modificar el campo
 quantity de la orden.
+El precio total se visualiza tanto en modenada local (AR) como en dólar estadounidense (USD), tomando
+como cotización el valor "blue" en el mercado de divisas.
+Al eliminar tanto un detalle de orden (item de producto) como una orden, se actualizará en ambos casos
+el stock de los productos relacionados. 
 
     http://127.0.0.1:8000/api/order/orders_detail/
 
@@ -129,7 +133,6 @@ Editar o eliminar una orden incluido sus detales (GET, PUT, PATCH, DELETE)
     http://127.0.0.1:8000/api/order/orders/<id_order>
 
 <br>
-
 
 ## Búsquedas y filtros
 

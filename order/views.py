@@ -91,6 +91,11 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
             if order_time < now:
                 order.status="x"
                 order.save(update_fields=['status'])
+                order_items_detail = order.order_items.all()
+                for item in order_items_detail:
+                    item.destroy()
+                    order.save(update_fileds=['order_items'])
+
                 order = Order().create_order(buyer=user, status="p")
         except ObjectDoesNotExist:
             order = Order().create_order(buyer=user, status="p")
