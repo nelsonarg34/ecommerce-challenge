@@ -36,25 +36,29 @@ Este proyecto incluye migraciones predeterminadas, también incluye una base de 
 
 ####    rest-auth-jwt
 
-http://localhost:8000/api/user/auth/login/
+    http://localhost:8000/api/user/auth/login/
 
-http://localhost:8000/api/user/auth/logout/
+    http://localhost:8000/api/user/auth/logout/
 
-http://localhost:8000/api/user/auth/password/reset/
+    http://localhost:8000/api/user/auth/password/reset/
 
-http://localhost:8000/api/user/auth/password/reset/confirm/
+    http://localhost:8000/api/user/auth/password/reset/confirm/
 
-http://localhost:8000/api/user/auth/user/
+    http://localhost:8000/api/user/auth/user/
 
-http://localhost:8000/api/user/auth/obtain_token/
+    http://localhost:8000/api/user/auth/obtain_token/
 
-http://localhost:8000/api/user/auth/refresh_token/
+    http://localhost:8000/api/user/auth/refresh_token/
 
 ####    Api Root Users
 
-Users (GET, POST): http://localhost:8000/api/user/users/
+Users (GET, POST): 
 
-Users (GET, PUT, PATCH, DELETE): http://127.0.0.1:8000/api/lists/<id_user>/
+    http://localhost:8000/api/user/users/
+
+Users (GET, PUT, PATCH, DELETE): 
+
+    http://127.0.0.1:8000/api/lists/<id_user>/
 
 <br>
 
@@ -71,21 +75,21 @@ Users (GET, PUT, PATCH, DELETE): http://127.0.0.1:8000/api/lists/<id_user>/
 
 ####    Api Root Product and Category
 
-    - Listar y crear un producto
+Listar y crear un producto (GET, POST)
 
-Productos (GET, POST): http://127.0.0.1:8000/api/product/products/
+    http://127.0.0.1:8000/api/product/products/
 
-    - Editar o eliminar un producto
+Editar o eliminar un producto (GET, PUT, PATCH, DELETE)
 
-Productos (GET, PUT, PATCH, DELETE): http://127.0.0.1:8000/api/product/products/<id_product>/
+    http://127.0.0.1:8000/api/product/products/<id_product>/
 
-    - Listar y crear una categoría de producto
+Listar y crear una categoría de producto (GET, POST)
 
-Categorías (GET, POST): http://127.0.0.1:8000/api/product/categories/
+    http://127.0.0.1:8000/api/product/categories/
 
-    - Editar o eliminar una categoría de producto
+Editar o eliminar una categoría de producto (GET, PUT, PATCH, DELETE)
 
-Categorías (GET, PUT, PATCH, DELETE): http://127.0.0.1:8000/api/product/categories/<id_category>
+    http://127.0.0.1:8000/api/product/categories/<id_category>
 
 <br>
 
