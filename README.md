@@ -52,25 +52,40 @@ http://localhost:8000/api/user/auth/refresh_token/
 
 ####    Api Root Users
 
-Users (GET, POST): "http://localhost:8000/api/user/users/" 
+Users (GET, POST): http://localhost:8000/api/user/users/
 
 Users (GET, PUT, PATCH, DELETE): http://127.0.0.1:8000/api/lists/<id_user>/
 
 <br>
 
-## Listas de tareas de usuarios
+## Productos y categorías de productos
 
-Interacción entre los usuarios y listas de tareas
+### Características
+- Registrar/Editar un producto
+- Eliminar un producto
+- Consultar un producto
+- Listar todos los productos
+- Modificar stock de un producto
 
 ###     End points
 
-Listas (GET, POST): http://127.0.0.1:8000/api/lists/
+####    Api Root Product and Category
 
-Listas (GET, PUT, PATCH, DELETE): http://127.0.0.1:8000/api/lists/1/
+    - Listar y crear un producto
 
-Tareas (GET, POST): http://127.0.0.1:8000/api/tasks/
+Productos (GET, POST): http://127.0.0.1:8000/api/product/products/
 
-Tareas (GET, PUT, PATCH, DELETE): http://127.0.0.1:8000/api/tasks/1/
+    - Editar o eliminar un producto
+
+Productos (GET, PUT, PATCH, DELETE): http://127.0.0.1:8000/api/product/products/<id_product>/
+
+    - Listar y crear una categoría de producto
+
+Categorías (GET, POST): http://127.0.0.1:8000/api/product/categories/
+
+    - Editar o eliminar una categoría de producto
+
+Categorías (GET, PUT, PATCH, DELETE): http://127.0.0.1:8000/api/product/categories/<id_category>
 
 <br>
 
