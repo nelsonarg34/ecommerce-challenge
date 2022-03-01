@@ -1,4 +1,4 @@
-# Lista de Tareas
+# E-commerce challenge with Django Rest Framework 
 
 ## Configuración inicial
 
@@ -6,7 +6,7 @@ Este proyecto incluye migraciones predeterminadas, también incluye una base de 
 
 1.- Clonar este repositorio:
 
-    git clone https://github.com/nelsonarg34/lista_tareas.git 
+    git clone https://github.com/nelsonarg34/ecommerce-challenge.git
 
 2.- Crear un entorno virtual:
 
@@ -29,10 +29,12 @@ Este proyecto incluye migraciones predeterminadas, también incluye una base de 
 - Registrar una cuenta
 - Iniciar y cerrar sesión
 - Restaurar contraseña
+- Obtener Token
+- Refrescar Token
 
 ###     End points
 
-####    rest-auth
+####    rest-auth-jwt
 
 http://localhost:8000/api/user/auth/login/
 
@@ -43,6 +45,16 @@ http://localhost:8000/api/user/auth/password/reset/
 http://localhost:8000/api/user/auth/password/reset/confirm/
 
 http://localhost:8000/api/user/auth/user/
+
+http://localhost:8000/api/user/auth/obtain_token/
+
+http://localhost:8000/api/user/auth/refresh_token/
+
+####    Api Root Users
+
+Users (GET, POST): "http://localhost:8000/api/user/users/" 
+
+Users (GET, PUT, PATCH, DELETE): http://127.0.0.1:8000/api/lists/<id_user>/
 
 <br>
 
