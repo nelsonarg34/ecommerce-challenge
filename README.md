@@ -75,7 +75,7 @@ Users (GET, PUT, PATCH, DELETE):
 
 ####    Api Root Product and Category
 
-Listar y crear un producto (GET, POST)
+Listar todos los productos o crear un producto (GET, POST)
 
     http://127.0.0.1:8000/api/product/products/
 
@@ -92,6 +92,44 @@ Editar o eliminar una categoría de producto (GET, PUT, PATCH, DELETE)
     http://127.0.0.1:8000/api/product/categories/<id_category>
 
 <br>
+
+## Ordenes y Detalle de Orden
+
+### Características
+- Registrar/Editar una orden (inclusive sus detalles)
+- Eliminar una orden
+- Consultar una orden y sus detalles
+- Listar todas las ordenes
+- Modificar una orden
+
+###     End points
+
+####    Api Root Order and OrderDetail
+
+Listar todos los detalles de las órdenes o crear una orden con sus detalles (GET, POST)
+Crea un ítem de producto y lo agrega a una orden activa, si no existe una orden se crea.
+Si la orden existe pero paso mas de 60 minutos desde su creación, esta última cambia su estado 
+a "Cancelado" y se genera una nueva. 
+Con la creación de la orden y su ítem (OrderDetail), se actualiza el stock del producto seleccionado.
+No se pueden generar items de productos iguales, si se desea mas de un mismo producto, modificar el campo
+quantity de la orden.
+
+    http://127.0.0.1:8000/api/order/orders_detail/
+
+Editar o eliminar un detalle de orden (GET, PUT, PATCH, DELETE)
+
+    http://127.0.0.1:8000/api/order/orders_detail/<id_order_detail>/
+
+Listar todas las ordenes con sus detalles (GET, POST)
+
+    http://127.0.0.1:8000/api/order/orders/
+
+Editar o eliminar una orden incluido sus detales (GET, PUT, PATCH, DELETE)
+
+    http://127.0.0.1:8000/api/order/orders/<id_order>
+
+<br>
+
 
 ## Búsquedas y filtros
 
