@@ -20,7 +20,12 @@ Este proyecto incluye migraciones predeterminadas, también incluye una base de 
 
 5.- Correr servidor:
 
-    venv) python manage.py runserver 
+    venv) python manage.py runserver
+
+6.- Usuario y contraeña Admin:
+    tests
+    test123456
+
 <br>
 
 ## Autenticación y registro de usuarios
@@ -136,13 +141,21 @@ Editar o eliminar una orden incluido sus detales (GET, PUT, PATCH, DELETE)
 
 ## Búsquedas y filtros
 
+### Características
 - Búsqueda: Usando un texto y buscando coincidencias.
 - Ordenación: Ascendente o descendente a partir de varios campos.
 - Filtrado: En base a a partir de varios campos.
+- No necesita autentificación. No se limita a un usuario.
 
 ###     End points
 
-http://127.0.0.1:8000/api/list_filters/
+####    Order
+
+    http://127.0.0.1:8000/api/order/orders_filters/
+
+####    OrderDetail
+
+    http://127.0.0.1:8000/api/order/orders_detail_filters/
 
 <br>
 

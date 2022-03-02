@@ -56,7 +56,7 @@ class Order(models.Model):
             return total_usd
 
     def __str__(self):
-        return "{}".format(self.id)
+        return "Order {} - Buyer: {}".format(self.id, self.buyer)
     
 class OrderDetail(models.Model):
     order = models.ForeignKey(Order, related_name="order_items", on_delete=models.CASCADE)
@@ -82,4 +82,4 @@ class OrderDetail(models.Model):
         return total
 
     def __str__(self):
-        return "{}".format(self.id)
+        return "Order: {} - Product: {}".format(self.order, self.product)

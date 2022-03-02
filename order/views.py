@@ -9,6 +9,8 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 from rest_framework import permissions, status, exceptions
+from rest_framework.exceptions import NotFound
+from django_filters.rest_framework import DjangoFilterBackend 
 
 from .serializers import (
     OrderDetailSerializer,
@@ -70,12 +72,14 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         order_quantity = serializer.validated_data['quantity']
         user = self.request.user
+        data = request.data
 
-        product = Product.objects.filter(
-            id=str(serializer.validated_data['product'])
-        ).order_by('created').first()
+        product = Product.objects.get(
+            id=data['product']
+        )
+        print(product.stock)
 
-        if product and product.stock >= order_quantity:
+        if product.stock >= order_quantity:
             actual_quantity = product.stock
             product.stock = actual_quantity - order_quantity
             
@@ -84,7 +88,7 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
 
         try:
             order = Order.objects.get(buyer=user, status="p")
-            order_time = order.date_time + timedelta(minutes=60)
+            order_time = order.date_time + timedelta(minutes=5)
             now = datetime.now()
             now = pytz.utc.localize(now)
 
@@ -93,31 +97,26 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
                 order.save(update_fields=['status'])
                 order_items_detail = order.order_items.all()
                 for item in order_items_detail:
-                    item.destroy()
-                    order.save(update_fileds=['order_items'])
+                    product = Product.objects.filter(id=data['product']).first()
+                    product.stock += item.quantity
+                    product.save(update_fields=['stock'])
+                    order.save()
 
-                order = Order().create_order(buyer=user, status="p")
+                order = Order.objects.create(buyer=user, status="p")
         except ObjectDoesNotExist:
-            order = Order().create_order(buyer=user, status="p")
-
+            order = Order.objects.create(buyer=user, status="p")
         orderdetail_serializer = self.get_queryset().filter(order=order)
-        print(serializer.validated_data['product'])
-        print(orderdetail_serializer)
         
-        if orderdetail_serializer:
-            for order_product in orderdetail_serializer:
-                print(order_product.product)
-                if serializer.validated_data['product'] == order_product.product:
-                    raise exceptions.NotAcceptable("The product exists in the order.")
+        for order_product in orderdetail_serializer:
+            if order_product.product == serializer.validated_data['product']:
+                raise exceptions.NotAcceptable("The product exists in the order.")
+            
+        product.save(update_fields=['stock'])
+        order_item = OrderDetail().create_order_item(order, product, order_quantity)
+        serializer = OrderDetailBasicSerializer(order_item)
+        headers = self.get_success_headers(serializer.data)
 
-        else:
-            product.save(update_fields=['stock'])
-            serializer.save()
-            order_item = OrderDetail().create_order_item(order, product, order_quantity)
-            serializer = OrderDetailBasicSerializer(order_item)
-            headers = self.get_success_headers(serializer.data)
-
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
     def destroy(self, request, *args, **kwargs):
@@ -136,3 +135,33 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         instance.delete()
+
+# Búsquedas y filtros (Django-filters)
+
+class OrderFiltersViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    filter_backends = [DjangoFilterBackend, 
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    search_fields = ['buyer', 'status']
+    ordering_fields = ['date_time', 'buyer']
+
+    filterset_fields = {
+    'buyer': ['exact'],
+    'status': ['exact']
+}
+
+class OrderDetailFiltersViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = OrderDetail.objects.all()
+    serializer_class = OrderDetailSerializer
+    filter_backends = [DjangoFilterBackend, 
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    search_fields = ['order', 'product', 'created']
+    ordering_fields = ['order', 'created']
+
+    filterset_fields = {
+    'order': ['exact'],
+    'product': ['exact']
+}

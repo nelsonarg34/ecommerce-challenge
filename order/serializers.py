@@ -16,11 +16,10 @@ class OrderDetailMinSerializer(serializers.ModelSerializer):
 class OrderDetailBasicSerializer(serializers.ModelSerializer):
 
     product_detail = ProductSerializer(source='product', read_only=True)
-    order_item_total = serializers.ReadOnlyField(source='get_order_item_total')
 
     class Meta:
         model = OrderDetail
-        fields = ['order', 'product', 'product_detail', 'quantity', 'order_item_total']
+        fields = ['order', 'product', 'product_detail', 'quantity']
 
 
 class OrderDetailBasicV1Serializer(serializers.ModelSerializer):
@@ -49,11 +48,11 @@ class OrderBasicSerializer(serializers.ModelSerializer):
 
     buyer_detail = UserSerializer(source='buyer', read_only=True)
     total = serializers.ReadOnlyField(source='get_total')
-    total_usd = serializers.ReadOnlyField(source='get_total_usd')
+    #total_usd = serializers.ReadOnlyField(source='get_total_usd')
 
     class Meta:
         model = Order
-        fields = ['id', 'buyer_detail', 'status', 'is_paid', 'date_time', 'total', 'total_usd']
+        fields = ['id', 'buyer_detail', 'status', 'is_paid', 'date_time', 'total']
 
 
 class OrderDetailSerializer(serializers.ModelSerializer):
