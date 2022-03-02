@@ -6,7 +6,7 @@ from .models import Product, Category
 class ProductAdmin(admin.ModelAdmin):
 
     list_display = (
-        'name', "price", "stock", "is_available", 'created', "updated")
+        'id', 'name', "price", "stock", "is_available", 'created', "updated")
 
     search_fields = ("name", "category",)
     date_hierarchy = "created"

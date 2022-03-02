@@ -23,7 +23,7 @@ Este proyecto incluye migraciones predeterminadas, también incluye una base de 
     venv) python manage.py runserver
 
 6.- Usuario y contraeña Admin:
-    tests
+    test@tests.com
     test123456
 
 <br>
