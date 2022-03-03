@@ -1,3 +1,4 @@
+from dataclasses import fields
 from itertools import product
 from rest_framework import serializers
 
@@ -64,6 +65,12 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderDetail
         fields = ['id','order', 'product', 'product_detail', 'quantity', 'order_item_total']
+
+class OrderDetailUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = OrderDetail
+        fields = ['quantity']
 
 
 

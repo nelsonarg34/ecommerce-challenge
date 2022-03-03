@@ -15,6 +15,7 @@ from .serializers import (
     OrderDetailSerializer,
     OrderSerializer,
     OrderDetailBasicSerializer,
+    OrderDetailUpdateSerializer,
 )
 from .models import Order, OrderDetail
 from .models import Product
@@ -76,7 +77,10 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
         product = Product.objects.get(
             id=data['product']
         )
-        print(product.stock)
+
+        max_quantity = 5 # Esto podría implementarse como un campo en Product
+        if order_quantity > max_quantity:
+            raise exceptions.NotAcceptable("Quantity of this product not allowed.")
 
         if product.stock >= order_quantity:
             actual_quantity = product.stock
@@ -102,6 +106,7 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
                     order.save()
 
                 order = Order.objects.create(buyer=user, status="p")
+                
         except ObjectDoesNotExist:
             order = Order.objects.create(buyer=user, status="p")
         orderdetail_serializer = self.get_queryset().filter(order=order)
@@ -117,6 +122,32 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        order_quantity = request.data['quantity']
+        if instance.quantity != order_quantity:
+            if order_quantity == 0:
+               raise exceptions.NotAcceptable("The number of items to be added must be at least 1")
+            else:
+                product = Product.objects.get(id=str(instance.product))
+                product.stock += instance.quantity - order_quantity
+                if product.stock > 0:
+                    product.save(update_fields=['stock'])
+                else:
+                    raise exceptions.NotAcceptable("Quantity of this product is out.")
+
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
