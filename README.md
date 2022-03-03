@@ -63,7 +63,7 @@ Users (GET, POST):
 
 Users (GET, PUT, PATCH, DELETE): 
 
-    http://127.0.0.1:8000/api/lists/<id_user>/
+    http://127.0.0.1:8000/api/user/users/<id_user>/
 
 <br>
 
