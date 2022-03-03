@@ -60,7 +60,7 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
     authentication_classes = [SessionAuthentication]
     filter_backends = [filters.SearchFilter]
     search_fields = ['order__status', 'product__name']
-
+   
 
     def get_queryset(self):
         user = self.request.user
@@ -106,7 +106,7 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
                     order.save()
 
                 order = Order.objects.create(buyer=user, status="p")
-                
+
         except ObjectDoesNotExist:
             order = Order.objects.create(buyer=user, status="p")
         orderdetail_serializer = self.get_queryset().filter(order=order)
@@ -128,7 +128,12 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
 
+        max_quantity = 5 # Esto podría implementarse como un campo en Product
         order_quantity = request.data['quantity']
+        print(order_quantity)
+        if order_quantity > max_quantity:
+            raise exceptions.NotAcceptable("Quantity of this product not allowed.")
+
         if instance.quantity != order_quantity:
             if order_quantity == 0:
                raise exceptions.NotAcceptable("The number of items to be added must be at least 1")
