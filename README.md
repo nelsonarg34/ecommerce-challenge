@@ -114,14 +114,16 @@ Editar o eliminar una categoría de producto (GET, PUT, PATCH, DELETE)
 Listar todos los detalles de las órdenes o crear una orden con sus detalles (GET, POST)
 Crea un ítem de producto y lo agrega a una orden activa, si no existe una orden se crea.
 Si la orden existe pero paso mas de 60 minutos desde su creación, esta última cambia su estado 
-a "Cancelado", se destruyen sus items de productos, se recupera el stock y se genera una nueva. 
+a "Cancelado", se destruyen sus ítems de productos, se recupera el stock y se genera una nueva. 
 Con la creación de la orden y su ítem (OrderDetail), se actualiza el stock del producto seleccionado.
-No se pueden generar items de productos iguales, si se desea mas de un mismo producto, modificar el campo
+No se pueden generar ítems de productos iguales, si se desea mas de un mismo producto, modificar el campo
 quantity de la orden.
-El precio total se visualiza tanto en modenada local (AR) como en dólar estadounidense (USD), tomando
+El precio total se visualiza tanto en moneda local (AR) como en dólar estadounidense (USD), tomando
 como cotización el valor "blue" en el mercado de divisas.
-Al eliminar tanto un detalle de orden (item de producto) como una orden, se actualizará en ambos casos
-el stock de los productos relacionados. 
+Al eliminar tanto un detalle de orden (ítem de producto) como una orden, se actualizará en ambos casos
+el stock de los productos relacionados, mismo comportamiento sucede al modificar la catidad de productos o items pedidos.
+La cantidad de productos solicitados no debe superar el máximo permitido (5, cantidad que se puede modificar).
+Todos estos eventos cuentan con validaciones y control de errores.
 
     http://127.0.0.1:8000/api/order/orders_detail/
 
